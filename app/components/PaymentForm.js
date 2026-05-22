@@ -18,7 +18,7 @@ export default function PaymentForm({ finalPrice, clientSecret }) {
     setLoading(true);
     setError(null);
 
-    // Step 1: Submit elements first
+    // Step 1: Elements submit
     const { error: submitError } = await elements.submit();
     if (submitError) {
       setError(submitError.message);
@@ -26,11 +26,8 @@ export default function PaymentForm({ finalPrice, clientSecret }) {
       return;
     }
 
-    // Step 2: Create Payment Method manually
-    // ✅ paymentMethodCreation: 'manual' set hone ki wajah se ab yeh kaam karega
-    const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
-      elements,
-    });
+    // Step 2: Payment Method banao
+    const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({ elements });
     if (pmError) {
       setError(pmError.message);
       setLoading(false);
@@ -44,8 +41,8 @@ export default function PaymentForm({ finalPrice, clientSecret }) {
       return;
     }
 
-    // Step 4: Confirm payment with paymentMethod.id directly
-    const { error: confirmError } = await stripe.confirmPayment({
+    // Step 4: Payment confirm karo
+    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
       clientSecret,
       confirmParams: {
         return_url: window.location.origin + '/payment/success',
@@ -60,8 +57,17 @@ export default function PaymentForm({ finalPrice, clientSecret }) {
       return;
     }
 
-    // ✅ Success
-    router.push('/payment/success');
+
+
+// ✅ Step 5: Customer pehle se ban chuka hai — bas redirect karo
+console.log('🎉 Payment Successful!');
+console.log('💳 Payment Intent ID:', paymentIntent.id);
+console.log('💰 Amount:', paymentIntent.amount / 100, paymentIntent.currency.toUpperCase());
+console.log('📋 Status:', paymentIntent.status);
+console.log('👤 Customer:', paymentIntent.customer); // ✅ ab yeh filled ayega
+console.log("dfdsf", paymentIntent);
+
+// router.push('/payment/success');
   }
 
   return (

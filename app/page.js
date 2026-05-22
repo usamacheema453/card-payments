@@ -59,23 +59,31 @@ export default function Home() {
   }
 
   // ---- Go To Payment ----
-  async function goToPayment() {
-    const res = await fetch('/api/create-payment-intent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        packageId: selectedPkg.id,
-        couponCode: discount ? couponInput : null,
-      }),
-    });
+async function goToPayment() {
+  const res = await fetch('/api/create-payment-intent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      packageId: selectedPkg.id,
+      couponCode: discount ? couponInput : null,
+      email: 'user@example.com',  // 👈 apna actual user email
+      name: 'John Doe',           // 👈 apna actual user name
+    }),
+  });
 
-    const data = await res.json();
-    console.log("data", data.clientSecret);
-    if (data.clientSecret) {
-      // ✅ FIX: Both values set in ONE update — no double re-render
-      setPaymentState({ step: 'payment', clientSecret: data.clientSecret });
-    }
+  const data = await res.json();
+
+  console.log('👤 Customer ID:', data.customerId);
+  console.log('📧 Customer Email:', data.customerEmail);
+
+  if (data.clientSecret) {
+    setPaymentState({
+      step: 'payment',
+      clientSecret: data.clientSecret,
+      customerId: data.customerId,
+    });
   }
+}
 
   // ---- LANDING ----
   if (step === 'landing') {

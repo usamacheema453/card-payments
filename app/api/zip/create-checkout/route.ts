@@ -10,31 +10,12 @@ export async function POST(req: NextRequest) {
       last_name: customer.lastName,
       email: customer.email,
       phone: customer.phone,
-      billing_address: {
-        first_name: customer.firstName,
-        last_name: customer.lastName,
-        line1: customer.address,
-        city: customer.city,
-        state: customer.state,
-        postal_code: customer.postcode,
-        country: 'AU',                    // or 'NZ'
-      },
     },
     order: {
       reference: orderReference,
       amount: amount,                     // in dollars e.g. 99.95
       currency: 'AUD',                    // or 'NZD'
       items: body.items,                  // cart items array
-      shipping: {
-        pickup: false,
-        address: {
-          line1: customer.address,
-          city: customer.city,
-          state: customer.state,
-          postal_code: customer.postcode,
-          country: 'AU',
-        },
-      },
     },
     config: {
       // Zip redirects here after customer approves/declines
